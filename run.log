@@ -1,8 +1,0 @@
-[2020-03-29 23:24:24,022 - INFO] Testing: demo/2008_000003.jpg
-[2020-03-29 23:24:24,059 - WARNING] No faces are detected.
-[2020-03-29 23:24:24,059 - INFO] Prob = -1
-[2020-03-29 23:24:24,059 - INFO] Testing: demo/demo.mp4
-[2020-03-29 23:24:25,216 - INFO] Frame 0
-[2020-03-29 23:24:25,458 - INFO] 1 faces are detected.
-[2020-03-29 23:24:27,992 - INFO] Frame 1
-[2020-03-29 23:24:28,221 - INFO] 1 faces are detected.
