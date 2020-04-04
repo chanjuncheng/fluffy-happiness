@@ -71,7 +71,8 @@ def get_face_mask(shape, landmarks):
     for group in OVERLAY_POINTS:
         draw_convex_hull(im,
                          landmarks[group],
-                         color=0)
+                         color=(255,255,255))
+                        #  color=0)
 
     im = np.array([im, im, im]).transpose((1, 2, 0))
 
@@ -118,7 +119,8 @@ def get_face_mask_v2(shape, landmarks_aligned, mat, size):
 
     draw_convex_hull(im,
                      np.int32(pts_org),
-                     color=1)
+                     color=(255,255,255))
+                    #  color=1)
 
     im = np.array([im, im, im]).transpose((1, 2, 0))
 
@@ -222,10 +224,11 @@ def get_all_face_mask(shape, face_list):
     """
     mask = np.zeros(shape)
     for _, points in face_list:
-        mask += np.int32(get_face_mask(shape[:2], points))
+        # mask += np.int32(get_face_mask(shape[:2], points))
+        mask += get_face_mask(shape[:2], points)
         # print('mask ', mask)
 
-    mask = np.uint8(mask > 0)
+    # mask = np.uint8(mask > 0)
     print('mask ', mask)
     cv2.imwrite('mask.jpg', mask)
 
