@@ -33,6 +33,45 @@ def im_test(im):
         rois = []
         # If one face is fake, the image is fake
         for trans_matrix, point in face_info:
+
+            # # define range of white color in HSV
+            # lower_white = np.array([0,0,255])
+            # upper_white = np.array([255,255,255])
+        
+            # # Create the mask
+            # mask = cv2.inRange(im, lower_white, upper_white)
+
+            mask = lib.get_face_mask(im.shape[:2], point)
+            mask_inv = cv2.bitwise_not(mask)
+            mask = cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY)
+            mask_inv = cv2.cvtColor(mask_inv, cv2.COLOR_BGR2GRAY)
+
+            cv2.imwrite('01-mask.jpg', mask)
+            cv2.imwrite('02-mask-inv.jpg', mask_inv)
+
+            blur_im = cv2.GaussianBlur(im, (45,45), 0)
+
+            print(mask.dtype)
+            print(mask_inv.dtype)
+
+            cv2.imwrite('03-blur.jpg', blur_im)
+
+            clear_area = cv2.bitwise_or(im, im, mask = mask_inv)
+            clear_area = clear_area[0:im.shape[0], 0:im.shape[1]]
+
+            cv2.imwrite('04-clear-area.jpg', clear_area)
+
+            blur_area = cv2.bitwise_or(blur_im, blur_im, mask = mask)
+            blur_area = blur_area[0:im.shape[0], 0:im.shape[1]]
+
+            cv2.imwrite('05-blur-area.jpg', blur_area)
+
+            combined_im = clear_area + blur_area
+
+            cv2.imwrite('06-combined.jpg', combined_im)
+
+
+
             # rois = []
 
             # get list of resized region of interest (faces)
@@ -48,18 +87,18 @@ def im_test(im):
 
             # print(aligned_lm[0])
 
-            print("roi img", roi[0])
+            # print("roi img", roi[0])
 
             # print(trans_matrix)
             # e = lib.get_face_mask(im.shape[:2], point)
-            e = lib.get_face_mask_v2(im.shape[:2], aligned_lm[0], trans_matrix, cfg.IMG_SIZE[0])
+            # e = lib.get_face_mask_v2(im.shape[:2], aligned_lm[0], trans_matrix, cfg.IMG_SIZE[0])
             # e = lib.get_face_mask_v2(aligned_im[0].shape[:2], aligned_lm[0], trans_matrix, cfg.IMG_SIZE[0])
-            cv2.imwrite('e.jpg', e)
+            # cv2.imwrite('e.jpg', e)
 
             # print('face info ', face_info)
-            cv2.imwrite('info.jpg', np.asarray(face_info[0][1]))
+            # cv2.imwrite('info.jpg', np.asarray(face_info[0][1]))
 
-            a = lib.get_all_face_mask(roi[0].shape, face_info)
+            # a = lib.get_all_face_mask(roi[0].shape, face_info)
             # b = lib.get_aligned_face_and_landmarks(im, face_info, 256, (0,0) )
             # bimg = np.asarray(b[0][0])
             # c = pi.aug(bimg, {'rotation_range': 10, 'zoom_range': 0.05, 'shift_range': 0.05, 'random_flip': 0.5}, [0.5, 1.5])
@@ -69,9 +108,9 @@ def im_test(im):
             #cv2.imwrite('d.jpg', d)
             # cv2.imwrite('c.jpg', c)
             # cv2.imwrite('b.jpg', bimg)
-            cv2.imwrite('a.jpg',a)
-            cv2.imwrite('ori.jpg', im)
-            cv2.imwrite('head.jpg', roi[0])
+            # cv2.imwrite('a.jpg',a)
+            # cv2.imwrite('ori.jpg', im)
+            # cv2.imwrite('head.jpg', roi[0])
             rois.append(cv2.resize(roi[0], tuple(cfg.IMG_SIZE[:2])))
 
 

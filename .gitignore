@@ -29,3 +29,13 @@ run.log
 solver.pyc
 .vscode/launch.json
 .vscode/settings.json
+blur.jpg
+py_utils/face_utils/__init__.pyc
+py_utils/face_utils/lib.pyc
+py_utils/face_utils/umeyama.pyc
+01-mask.jpg
+02-mask-inv.jpg
+03-blur.jpg
+04-clear-area.jpg
+05-blur-area.jpg
+06-combined.jpg

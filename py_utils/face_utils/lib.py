@@ -66,7 +66,7 @@ def get_face_mask(shape, landmarks):
     OVERLAY_POINTS = [
         LEFT_BROW_POINTS + RIGHT_BROW_POINTS + [48, 59, 58, 57, 56, 55, 54]
     ]
-    im = np.zeros(shape, dtype=np.float64)
+    im = np.zeros(shape, dtype=np.uint8)
 
     for group in OVERLAY_POINTS:
         draw_convex_hull(im,
@@ -75,6 +75,7 @@ def get_face_mask(shape, landmarks):
                         #  color=0)
 
     im = np.array([im, im, im]).transpose((1, 2, 0))
+    # im = np.uint8(im == 255)
 
     return im
 
