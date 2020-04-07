@@ -39,3 +39,11 @@ py_utils/face_utils/umeyama.pyc
 04-clear-area.jpg
 05-blur-area.jpg
 06-combined.jpg
+face2.jpg
+face3.jpg
+face4.jpg
+py_8a_utils/__init__.pyc
+py_8a_utils/affine_warp.pyc
+py_utils/face_utils/__init__.pyc
+py_utils/face_utils/lib.pyc
+py_utils/face_utils/umeyama.pyc

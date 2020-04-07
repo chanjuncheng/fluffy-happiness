@@ -9,6 +9,7 @@ from py_utils.face_utils import lib
 from py_utils.vid_utils import proc_vid as pv
 from py_utils.img_utils import proc_img as pi
 import logging
+from py_8a_utils import affine_warp
 
 pwd = os.path.dirname(__file__)
 front_face_detector = dlib.get_frontal_face_detector()
@@ -95,5 +96,7 @@ new_image = np.copy(im)
 cv2.imwrite('face3.jpg', new_image)
 
 image_size = im.shape[1], im.shape[0]
-new_image = cv2.warpAffine(face, trans_matrix*size, image_size, new_image, cv2.WARP_INVERSE_MAP, cv2.BORDER_TRANSPARENT)
+# cv2.warpAffine(face, trans_matrix*size, image_size, new_image, cv2.WARP_INVERSE_MAP, cv2.BORDER_TRANSPARENT)
+new_image = affine_warp.affineWarp(face, trans_matrix, image_size, new_image, True)
+new_image = cv2.resize(new_image, image_size) # resize written here for now, plan to move into affineWarp
 cv2.imwrite('face4.jpg', new_image)
