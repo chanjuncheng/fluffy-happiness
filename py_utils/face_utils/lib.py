@@ -229,8 +229,8 @@ def get_all_face_mask(shape, face_list):
         # print('mask ', mask)
 
     # mask = np.uint8(mask > 0)
-    print('mask ', mask)
-    cv2.imwrite('mask.jpg', mask)
+    # print('mask ', mask)
+    # cv2.imwrite('mask.jpg', mask)
 
     return mask
 
