@@ -47,3 +47,6 @@ py_8a_utils/affine_warp.pyc
 py_utils/face_utils/__init__.pyc
 py_utils/face_utils/lib.pyc
 py_utils/face_utils/umeyama.pyc
+.vscode/.ropeproject/config.py
+.vscode/.ropeproject/objectdb
+train_tests/
