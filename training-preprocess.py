@@ -11,6 +11,9 @@ from py_utils.img_utils import proc_img as pi
 import logging
 import random
 
+'''
+Training designed to only work on images
+'''
 
 pwd = os.path.dirname(__file__)
 
