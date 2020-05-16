@@ -50,3 +50,7 @@ py_utils/face_utils/umeyama.pyc
 .vscode/.ropeproject/config.py
 .vscode/.ropeproject/objectdb
 train_tests/
+mesonet_classifiers.pyc
+__pycache__/training_preprocess.cpython-36.pyc
+training_preprocess.pyc
+training/
