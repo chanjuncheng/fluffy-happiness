@@ -54,3 +54,5 @@ mesonet_classifiers.pyc
 __pycache__/training_preprocess.cpython-36.pyc
 training_preprocess.pyc
 training/
+training.zip
+training-224.zip
