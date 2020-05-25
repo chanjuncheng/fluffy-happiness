@@ -81,6 +81,7 @@ def batch_preprocess(ims):
     for i in range(len(ims)):
         output = preprocess(ims[i])
         if output is not None:
+            output = cv2.resize(output, (256,256))
             output_ims.append(output)
         else: # no face found
             failed_indices.append(i)
@@ -115,9 +116,26 @@ def batch_imwrite(folder_path, filenames, ims):
         cv2.imwrite(path, ims[i])
 
 
+
+def ori_batch_imwrite(folder_path, filenames, ims):
+
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+
+    for i in range(len(ims)):
+        ori_filename = filenames[i][:]
+        path = path = os.path.join(folder_path, ori_filename)
+        cv2.imwrite(path, ims[i])
+
+
 print("Reading all images from directory...")
 
 ims, filenames, failed = batch_imread(TRAIN_IMGS_FOLDER_PATH)
+
+ori = []
+for img in ims:
+    img = cv2.resize(img, (256,256))
+    ori.append(img)
 
 if len(failed) > 0:
     print("Some images failed to be read:")
@@ -149,7 +167,8 @@ for i in range(len(filenames)-1, -1, -1):
 
 print("Writing to output images...")
 
-batch_imwrite(os.path.join(TRAIN_IMGS_FOLDER_PATH, "./warped"), filenames, output_ims)
+batch_imwrite(os.path.join(TRAIN_IMGS_FOLDER_PATH, "../train_warped"), filenames, output_ims)
+ori_batch_imwrite(os.path.join(TRAIN_IMGS_FOLDER_PATH, "../train_original"), filenames, ori)
 
 print("OK")
 print("Done.")

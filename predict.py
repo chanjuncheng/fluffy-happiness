@@ -1,6 +1,7 @@
 import os, cv2, dlib
 from py_utils.face_utils import lib
 from mesonet_classifiers import *
+import numpy as np
 
 
 '''
@@ -38,8 +39,9 @@ classifier.load(FOLDER_PATH_WEIGHTS)
 filepath = ""
 
 is_file = os.path.isfile(filepath)
-is_video = filepath[:-4] == ".mp4"
-is_image = filepath[:-4] == ".jpg"
+is_video = filepath[-4:] == ".mp4"
+is_image = filepath[-4:] == ".jpg" or filepath[-4:] == ".png"
+
 
 if not is_file or (not is_video and not is_image):
     raise Exception("Invalid file format.")
@@ -77,6 +79,8 @@ if is_image:
     im = cv2.imread(filepath)
     face = extract_face(im)
     if face is not None:
+        face = cv2.resize(face, (256,256))
+        face = np.expand_dims(face, axis=0)
         res = classifier.predict(face)
 
 print("Prediction: " + "This video has been manipulated" if res == 1 else "This video is unmodified")
