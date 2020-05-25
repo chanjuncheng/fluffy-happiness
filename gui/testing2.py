@@ -1,37 +1,50 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import QCoreApplication, Qt
+from PyQt5.QtGui import QIcon, QColor
+from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QPushButton, QAction, QMessageBox
+from PyQt5.QtWidgets import QCalendarWidget, QFontDialog, QColorDialog, QTextEdit, QFileDialog
+from PyQt5.QtWidgets import QCheckBox, QProgressBar, QComboBox, QLabel, QStyleFactory, QLineEdit, QInputDialog
 
 
-class Ui_MainWindow(object):
+class Ui_MainWindow(QMainWindow):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800, 600)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
+
         self.input_button = QtWidgets.QPushButton(self.centralwidget)
         self.input_button.setGeometry(QtCore.QRect(270, 320, 93, 28))
         self.input_button.setObjectName("input_button")
+
         self.label1 = QtWidgets.QLabel(self.centralwidget)
         self.label1.setGeometry(QtCore.QRect(40, 50, 201, 61))
         self.label1.setObjectName("label1")
+
         self.label2 = QtWidgets.QLabel(self.centralwidget)
         self.label2.setGeometry(QtCore.QRect(40, 150, 421, 81))
         self.label2.setObjectName("label2")
+
         self.image = QtWidgets.QLabel(self.centralwidget)
         self.image.setGeometry(QtCore.QRect(580, 0, 211, 531))
         self.image.setText("")
         self.image.setPixmap(QtGui.QPixmap("line-symmetry-point-geometric-abstraction-pattern-png-favpng-10u5cq377cJpgRqsjAsjz3sxz.jpg"))
         self.image.setObjectName("image")
+
         self.input_label = QtWidgets.QLabel(self.centralwidget)
         self.input_label.setGeometry(QtCore.QRect(50, 320, 141, 31))
         self.input_label.setObjectName("input_label")
+
         self.output_label = QtWidgets.QLabel(self.centralwidget)
         self.output_label.setGeometry(QtCore.QRect(50, 380, 141, 31))
         self.output_label.setObjectName("output_label")
+
         self.output_button = QtWidgets.QPushButton(self.centralwidget)
         self.output_button.setGeometry(QtCore.QRect(270, 380, 93, 28))
         self.output_button.setObjectName("output_button")
+
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 26))
@@ -53,6 +66,10 @@ class Ui_MainWindow(object):
         self.input_label.setText(_translate("MainWindow", "No input file selected"))
         self.output_label.setText(_translate("MainWindow", "No output path selected"))
         self.output_button.setText(_translate("MainWindow", "Browse..."))
+
+    # referred to Opening files with file picker - PyQt with Python GUI Programming tutorial 14: https://www.youtube.com/watch?v=0hN6vSSHT0I
+    def fileOpen(self):
+        name = QtGui
 
 
 if __name__ == "__main__":

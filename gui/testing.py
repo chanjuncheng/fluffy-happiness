@@ -54,9 +54,10 @@ class myWindow(QMainWindow):
         self.test_button.clicked.connect(self.predict)
 
         self.image = QtWidgets.QLabel(self)
-        self.image.setGeometry(QtCore.QRect(600, 0, 201, 551))
-        self.image.setPixmap(QtGui.QPixmap("network.png"))
+        self.image.setGeometry(QtCore.QRect(590, 10, 211, 561))
+        self.image.setPixmap(QtGui.QPixmap("network2_cropped.png"))
         self.image.setScaledContents(True)
+        self.image.setObjectName("image")
 
         self.predict_label = QtWidgets.QLabel(self)
         self.predict_label.setGeometry(QtCore.QRect(50, 440, 240, 31))
