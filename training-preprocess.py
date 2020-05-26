@@ -136,6 +136,9 @@ ori = []
 for img in ims:
     img = cv2.resize(img, (256,256))
     ori.append(img)
+    
+ori_batch_imwrite(os.path.join(TRAIN_IMGS_FOLDER_PATH, "../train_original"), filenames, ori)
+
 
 if len(failed) > 0:
     print("Some images failed to be read:")
@@ -168,7 +171,6 @@ for i in range(len(filenames)-1, -1, -1):
 print("Writing to output images...")
 
 batch_imwrite(os.path.join(TRAIN_IMGS_FOLDER_PATH, "../train_warped"), filenames, output_ims)
-ori_batch_imwrite(os.path.join(TRAIN_IMGS_FOLDER_PATH, "../train_original"), filenames, ori)
 
 print("OK")
 print("Done.")

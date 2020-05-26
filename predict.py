@@ -36,7 +36,7 @@ classifier.load(FOLDER_PATH_WEIGHTS)
 ######################
 # GET INPUT DIR HERE #
 ######################
-filepath = ""
+filepath = "./00307.png"
 
 is_file = os.path.isfile(filepath)
 is_video = filepath[-4:] == ".mp4"
@@ -63,7 +63,10 @@ if is_video:
     while is_running:
         face = extract_face(im)
         if face is not None: # if no face found, skip current frame
-            if classifier.predict(im) == 1:
+            face = cv2.resize(face, (256,256))
+            face = np.expand_dims(face, axis=0)
+            res = classifier.predict(face)[0][0]
+            if res >= 0.5:
                 pos_count += 1
             else:
                 neg_count += 1
@@ -81,8 +84,12 @@ if is_image:
     if face is not None:
         face = cv2.resize(face, (256,256))
         face = np.expand_dims(face, axis=0)
-        res = classifier.predict(face)
+        res = classifier.predict(face)[0][0]
+        if res >= 0.5:
+            res = 1
+        else:
+            res = 0
 
-print("Prediction: " + "This video has been manipulated" if res == 1 else "This video is unmodified")
+print("Prediction: " + "This video has been manipulated" if res == 0 else "This video is unmodified")
 
 # Assumption made: if no face is found, treat content as unmodified as DeepFake only works on facial regions
