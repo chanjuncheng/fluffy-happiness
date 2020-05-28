@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QCalendarWidget, QFontDialog, QColorDialog, QTextEdi
 from PyQt5.QtWidgets import QCheckBox, QProgressBar, QComboBox, QLabel, QStyleFactory, QLineEdit, QInputDialog
 import sys
 import os
-
+from predict import *
 
 # pyuic5 -x testing.ui -o testing3.py
 class myWindow(QMainWindow):
@@ -42,7 +42,7 @@ class myWindow(QMainWindow):
         self.input_button = QtWidgets.QPushButton(self)
         self.input_button.setGeometry(QtCore.QRect(450, 320, 93, 28))
         self.input_button.setObjectName("input_button")
-        self.input_button.clicked.connect(self.openFile)
+        self.filepath = self.input_button.clicked.connect(self.openFile)
 
         self.file_label = QtWidgets.QLabel(self)
         self.file_label.setGeometry(QtCore.QRect(50, 380, 240, 31))
@@ -64,6 +64,10 @@ class myWindow(QMainWindow):
         self.predict_label.setGeometry(QtCore.QRect(50, 440, 240, 31))
         self.predict_label.setObjectName("predict_label")
 
+        self.loading_label = QtWidgets.QLabel(self)
+        self.loading_label.setGeometry(QtCore.QRect(50, 500, 240, 31))
+        self.loading_label.setObjectName("loading_label")
+
 
         _translate = QtCore.QCoreApplication.translate
         self.label1.setText(_translate("MainWindow",
@@ -75,6 +79,7 @@ class myWindow(QMainWindow):
         self.input_label.setText(_translate("MainWindow", "No input file selected"))
         self.input_button.setText(_translate("MainWindow", "Browse..."))
         self.test_button.setText(_translate("MainWindow", "Test"))
+        self.loading_label.setText(_translate("MainWindow", "Program not running."))
 
 
     # def filePicker(self):
@@ -99,7 +104,7 @@ class myWindow(QMainWindow):
             self.file_label.adjustSize()
             # image = QPixmap(path)
             self.test_button.setEnabled(True)
-            return path
+            self.filepath = path
         else:
             self.input_label.setText(_translate("MainWindow", "Please select a valid file format (jpg/png/mp4)"))
             self.file_label.setText(_translate("MainWindow", path))
@@ -115,16 +120,27 @@ class myWindow(QMainWindow):
         # return text
 
     def predict(self):
-        # os.startfile()
-        real = True
-        if real:
-            self.predict_label.setText("Prediction successful. This video/image is unmodified.")
+        print(self.filepath)
+        _translate = QtCore.QCoreApplication.translate
+        self.loading_label.setText(_translate("MainWindow", "Please wait.. The program is currently running."))
+        self.loading_label.adjustSize()
+        self.loading_label.repaint()
+        deepfaked = prediction(self.filepath)
+        if deepfaked:
+            self.predict_label.setText("Prediction successful." + self.filepath + " has been manipulated.")
             self.predict_label.adjustSize()
+            self.loading_label.setText("Done.")
+            self.loading_label.adjustSize()
         else:
-            self.predict_label.setText("Prediction successful. This video/image has been manipulated.")
+            self.predict_label.setText("Prediction successful." + self.filepath + " is unmodified.")
             self.predict_label.adjustSize()
+            self.loading_label.setText("Done.")
+            self.loading_label.adjustSize()
 
-
+    # def loading(self):
+    #     _translate = QtCore.QCoreApplication.translate
+    #     self.loading_label.setText(_translate("MainWindow", "Please wait.. The program is currently running."))
+    #     self.loading_label.adjustSize()
 
 
     # def editor(self):
