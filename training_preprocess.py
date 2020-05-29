@@ -21,6 +21,8 @@ pwd = os.path.dirname(__file__)
 RESIZE_MIN = 64
 RESIZE_MAX = 128
 
+IMG_SIZE = 224
+
 TRAIN_IMGS_FOLDER_PATH = pwd + "./train_tests"
 
 front_face_detector = dlib.get_frontal_face_detector()
@@ -70,7 +72,12 @@ def preprocess(im):
 
     output_im = area_surrounding + area_facial
 
-    return output_im
+    # crop image, after randomly expanding ROI (minimum bounding box b) in each direction between
+    # [0, h/5] and [0, w/8] where h, w are height and width of b. then resize to 224 x 224 for final training data
+    rois, _ = lib.cut_head([output_im], point, random.randint(0, 10))
+    cropped_output_im = cv2.resize(rois[0], (IMG_SIZE, IMG_SIZE))
+
+    return cropped_output_im
 
 
 def batch_preprocess(ims):
@@ -116,66 +123,46 @@ def batch_imwrite(folder_path, filenames, ims):
         cv2.imwrite(path, ims[i])
 
 
-
-def ori_batch_imwrite(folder_path, filenames, ims):
-
-    if not os.path.exists(folder_path):
-        os.makedirs(folder_path)
-
-    for i in range(len(ims)):
-        ori_filename = filenames[i][:]
-        path = path = os.path.join(folder_path, ori_filename)
-        cv2.imwrite(path, ims[i])
-
-
-print("Reading all images from directory...")
-
-ims, filenames, failed = batch_imread(TRAIN_IMGS_FOLDER_PATH)
-
-ori = []
-for img in ims:
-    img = cv2.resize(img, (256,256))
-    ori.append(img)
+if __name__ == "__main__":
     
-ori_batch_imwrite(os.path.join(TRAIN_IMGS_FOLDER_PATH, "../train_original"), filenames, ori)
+    print("Reading all images from directory...")
 
+    ims, filenames, failed = batch_imread(TRAIN_IMGS_FOLDER_PATH)
 
-if len(failed) > 0:
-    print("Some images failed to be read:")
-    for i in failed:
-        print(filenames[i])
-else:
+    if len(failed) > 0:
+        print("Some images failed to be read:")
+        for i in failed:
+            print(filenames[i])
+    else:
+        print("OK")
+
+    # remove all filenames of failed files
+    for i in range(len(filenames)-1, -1, -1):
+        if i in failed:
+            del filenames[i]
+
+    print("Start preprocessing...")
+
+    output_ims, failed = batch_preprocess(ims)
+
+    if len(failed) > 0:
+        print("Some files were skipped (no face found):")
+        for i in failed:
+            print(filenames[i])
+    else:
+        print("OK")
+
+    # remove all filenames of failed files
+    for i in range(len(filenames)-1, -1, -1):
+        if i in failed:
+            del filenames[i]
+
+    print("Writing to output images...")
+
+    batch_imwrite(os.path.join(TRAIN_IMGS_FOLDER_PATH, "./warped"), filenames, output_ims)
+
     print("OK")
-
-# remove all filenames of failed files
-for i in range(len(filenames)-1, -1, -1):
-    if i in failed:
-        del filenames[i]
-
-print("Start preprocessing...")
-
-output_ims, failed = batch_preprocess(ims)
-
-if len(failed) > 0:
-    print("Some files were skipped (no face found):")
-    for i in failed:
-        print(filenames[i])
-else:
-    print("OK")
-
-# remove all filenames of failed files
-for i in range(len(filenames)-1, -1, -1):
-    if i in failed:
-        del filenames[i]
-
-print("Writing to output images...")
-
-batch_imwrite(os.path.join(TRAIN_IMGS_FOLDER_PATH, "../train_warped"), filenames, output_ims)
-
-print("OK")
-print("Done.")
+    print("Done.")
 
 
 # TODO: increase diversity by introducing different masks
-# TODO: crop ROI of [y0 - y^0, x0 - x^0, y1 + y^1, x1 + x^1] where the minumum bounding box b is expanded in each direction by random between
-# [0, h/5] and [0, w/8] where h, w are height and width of b. then resize to 224 x 224 for final training data
