@@ -21,7 +21,7 @@ pwd = os.path.dirname(__file__)
 RESIZE_MIN = 64
 RESIZE_MAX = 128
 
-IMG_SIZE = 224
+IMG_SIZE = 256
 
 TRAIN_IMGS_FOLDER_PATH = pwd + "./train_tests"
 
@@ -124,45 +124,49 @@ def batch_imwrite(folder_path, filenames, ims):
 
 
 if __name__ == "__main__":
+
+    im = cv2.imread(pwd + './obama.jpg')
+    output = preprocess(im)
+    cv2.imwrite(pwd + './obama-preprocessed.jpg', output)
     
-    print("Reading all images from directory...")
+    # print("Reading all images from directory...")
 
-    ims, filenames, failed = batch_imread(TRAIN_IMGS_FOLDER_PATH)
+    # ims, filenames, failed = batch_imread(TRAIN_IMGS_FOLDER_PATH)
 
-    if len(failed) > 0:
-        print("Some images failed to be read:")
-        for i in failed:
-            print(filenames[i])
-    else:
-        print("OK")
+    # if len(failed) > 0:
+    #     print("Some images failed to be read:")
+    #     for i in failed:
+    #         print(filenames[i])
+    # else:
+    #     print("OK")
 
-    # remove all filenames of failed files
-    for i in range(len(filenames)-1, -1, -1):
-        if i in failed:
-            del filenames[i]
+    # # remove all filenames of failed files
+    # for i in range(len(filenames)-1, -1, -1):
+    #     if i in failed:
+    #         del filenames[i]
 
-    print("Start preprocessing...")
+    # print("Start preprocessing...")
 
-    output_ims, failed = batch_preprocess(ims)
+    # output_ims, failed = batch_preprocess(ims)
 
-    if len(failed) > 0:
-        print("Some files were skipped (no face found):")
-        for i in failed:
-            print(filenames[i])
-    else:
-        print("OK")
+    # if len(failed) > 0:
+    #     print("Some files were skipped (no face found):")
+    #     for i in failed:
+    #         print(filenames[i])
+    # else:
+    #     print("OK")
 
-    # remove all filenames of failed files
-    for i in range(len(filenames)-1, -1, -1):
-        if i in failed:
-            del filenames[i]
+    # # remove all filenames of failed files
+    # for i in range(len(filenames)-1, -1, -1):
+    #     if i in failed:
+    #         del filenames[i]
 
-    print("Writing to output images...")
+    # print("Writing to output images...")
 
-    batch_imwrite(os.path.join(TRAIN_IMGS_FOLDER_PATH, "./warped"), filenames, output_ims)
+    # batch_imwrite(os.path.join(TRAIN_IMGS_FOLDER_PATH, "./warped"), filenames, output_ims)
 
-    print("OK")
-    print("Done.")
+    # print("OK")
+    # print("Done.")
 
 
 # TODO: increase diversity by introducing different masks
