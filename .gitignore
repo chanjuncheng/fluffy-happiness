@@ -56,3 +56,4 @@ training_preprocess.pyc
 training/
 training.zip
 training-224.zip
+__pycache__

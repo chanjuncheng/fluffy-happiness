@@ -1,11 +1,11 @@
+import sys
+import os
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QCoreApplication, Qt
 from PyQt5.QtGui import QIcon, QColor, QPixmap
 from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QPushButton, QAction, QMessageBox
 from PyQt5.QtWidgets import QCalendarWidget, QFontDialog, QColorDialog, QTextEdit, QFileDialog
 from PyQt5.QtWidgets import QCheckBox, QProgressBar, QComboBox, QLabel, QStyleFactory, QLineEdit, QInputDialog
-import sys
-import os
 from predict import *
 
 # pyuic5 -x testing.ui -o testing3.py
@@ -56,7 +56,7 @@ class myWindow(QMainWindow):
 
         self.image = QtWidgets.QLabel(self)
         self.image.setGeometry(QtCore.QRect(590, 10, 211, 561))
-        self.image.setPixmap(QtGui.QPixmap("network2_cropped.png"))
+        self.image.setPixmap(QtGui.QPixmap("ui/bg.png"))
         self.image.setScaledContents(True)
         self.image.setObjectName("image")
 
@@ -125,7 +125,7 @@ class myWindow(QMainWindow):
         self.loading_label.setText(_translate("MainWindow", "Please wait.. The program is currently running."))
         self.loading_label.adjustSize()
         self.loading_label.repaint()
-        deepfaked = prediction(self.filepath)
+        deepfaked = predict(self.filepath)
         if deepfaked:
             self.predict_label.setText("Prediction successful." + self.filepath + " has been manipulated.")
             self.predict_label.adjustSize()

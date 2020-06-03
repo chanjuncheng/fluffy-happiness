@@ -1,16 +1,15 @@
-import os, cv2
-from mesonet_classifiers import *
-import numpy as np
+import os, cv2, numpy as np
+from mesonet_classifiers import MesoInception4
 
 
 pwd = os.path.dirname(__file__)
-FOLDER_PATH_POSITIVE_SAMPLES = pwd + "./test_original"
-FOLDER_PATH_NEGATIVE_SAMPLES = pwd + "./test_warped"
-FOLDER_PATH_WEIGHTS = pwd + "./8a_weights"
+FOLDER_PATH_POSITIVE_SAMPLES = pwd + "./test_imgs/positive"
+FOLDER_PATH_NEGATIVE_SAMPLES = pwd + "./test_imgs/negative"
+DIR_TO_WEIGHTS_FILE = pwd + "./8a_cfgs/8a_mesoinception4.h5"
 
 
 classifier = MesoInception4()
-classifier.load(FOLDER_PATH_WEIGHTS)
+classifier.load(DIR_TO_WEIGHTS_FILE)
 
 true_pos = 0
 true_neg = 0
@@ -20,7 +19,7 @@ false_neg = 0
 for filename in os.listdir(FOLDER_PATH_POSITIVE_SAMPLES):
     im = cv2.imread(os.path.join(FOLDER_PATH_POSITIVE_SAMPLES, filename))
     if im is not None:
-        im = cv2.resize(im, (256,256))
+        # im = cv2.resize(im, (256,256))
         im = np.expand_dims(im, axis=0)
         res = classifier.predict(im)[0][0]
         if res >= 0.5:
@@ -31,7 +30,7 @@ for filename in os.listdir(FOLDER_PATH_POSITIVE_SAMPLES):
 for filename in os.listdir(FOLDER_PATH_NEGATIVE_SAMPLES):
     im = cv2.imread(os.path.join(FOLDER_PATH_NEGATIVE_SAMPLES, filename))
     if im is not None:
-        im = cv2.resize(im, (256,256))
+        # im = cv2.resize(im, (256,256))
         im = np.expand_dims(im, axis=0)
         res = classifier.predict(im)[0][0]
         if res < 0.5:

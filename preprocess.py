@@ -1,15 +1,5 @@
-import tensorflow as tf
-from resolution_network import ResoNet
-from solver import Solver
-from easydict import EasyDict as edict
-import cv2, yaml, os, dlib
-from py_utils.vis import vis_im
-import numpy as np
+import random, cv2, os, dlib, numpy as np
 from py_utils.face_utils import lib
-from py_utils.vid_utils import proc_vid as pv
-from py_utils.img_utils import proc_img as pi
-import logging
-import random
 
 '''
 Training designed to only work on images
@@ -21,14 +11,52 @@ pwd = os.path.dirname(__file__)
 RESIZE_MIN = 64
 RESIZE_MAX = 128
 
-IMG_SIZE = 224
+IMG_SIZE = 256
 
-TRAIN_IMGS_FOLDER_PATH = pwd + "./train_tests"
+FOLDER_PATH_POSITIVE_IMGS = pwd + "./imgs/positive"
+FOLDER_PATH_NEGATIVE_IMGS = pwd + "./imgs/negative" # this is the folder where the images will be applied Deepfakes simulation
 
 front_face_detector = dlib.get_frontal_face_detector()
 lmark_predictor = dlib.shape_predictor(pwd + './dlib_model/shape_predictor_68_face_landmarks.dat')
 
-def preprocess(im):
+
+def simulateDeepfake(im, trans_matrix, point):
+
+    image_size = im.shape[1], im.shape[0]
+    size = random.randint(RESIZE_MIN, RESIZE_MAX + 1) # align face to a size k x k where k is a number between RESIZE_MIN and RESIZE_MAX
+
+    # Figure 2 in CVPRW2019_Face_Artifacts
+
+    face = cv2.warpAffine(im, trans_matrix * size, (size, size))
+    face = cv2.GaussianBlur(face, (5,5), 0)
+
+    # xj resizing code
+    # face_imgs, face_landmark_coords = lib.get_aligned_face_and_landmarks(im, faces, 256, (0,0))
+    # face_img = face_imgs[0]
+    # face = cv2.resize(face_img, (size, size))
+
+    warped_im = np.copy(im)
+    warped_im = cv2.warpAffine(face, trans_matrix*size, image_size, warped_im, cv2.WARP_INVERSE_MAP, cv2.BORDER_TRANSPARENT)
+
+    # Figure 3 in CVPRW2019_Face_Artifacts
+
+    # get mask of facial area and surrounds, convert to grayscale
+    mask = lib.get_face_mask(im.shape[:2], point)
+    mask_inv = cv2.bitwise_not(mask)
+    mask = cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY)
+    mask_inv = cv2.cvtColor(mask_inv, cv2.COLOR_BGR2GRAY)
+
+    area_surrounding = cv2.bitwise_or(im, im, mask = mask_inv)
+    area_surrounding = area_surrounding[0:im.shape[0], 0:im.shape[1]]
+
+    area_facial = cv2.bitwise_or(warped_im, warped_im, mask = mask)
+    area_facial = area_facial[0:im.shape[0], 0:im.shape[1]]
+
+    output_im = area_surrounding + area_facial
+    return output_im
+
+
+def preprocess(im, simulateDeepfake=False):
 
     faces = lib.align(im[:, :, (2,1,0)], front_face_detector, lmark_predictor)  # list of tuples of (transformation matrix, landmark point) of identified faces
     
@@ -38,10 +66,13 @@ def preprocess(im):
 
     # logging.info('{} faces are detected.'.format(len(faces)))
 
-    _, point = faces[0] # take only the first face found
+    trans_matrix, point = faces[0] # take only the first face found
+
+    if simulateDeepfake:
+        im = simulateDeepfake(im, trans_matrix, point)
 
     # crop image, after randomly expanding ROI (minimum bounding box b) in each direction between
-    # [0, h/5] and [0, w/8] where h, w are height and width of b. then resize to 224 x 224 for final training data
+    # [0, h/5] and [0, w/8] where h, w are height and width of b. then resize to 256 x 256 for final training data
     rois, _ = lib.cut_head([im], point, random.randint(0, 10))
     cropped_output_im = cv2.resize(rois[0], (IMG_SIZE, IMG_SIZE))
 
@@ -85,16 +116,16 @@ def batch_imwrite(folder_path, filenames, ims):
         os.makedirs(folder_path)
 
     for i in range(len(ims)):
-        new_filename = filenames[i][:-4] + "_original" + filenames[i][-4:]
+        new_filename = filenames[i][:-4] + "_preprocessed" + filenames[i][-4:]
         path = os.path.join(folder_path, new_filename)
         cv2.imwrite(path, ims[i])
 
 
-if __name__ == "__main__":
-    
+def readAndPreprocessAndWrite(path):
+
     print("Reading all images from directory...")
 
-    ims, filenames, failed = batch_imread(TRAIN_IMGS_FOLDER_PATH)
+    ims, filenames, failed = batch_imread(path)
 
     if len(failed) > 0:
         print("Some images failed to be read:")
@@ -126,7 +157,16 @@ if __name__ == "__main__":
 
     print("Writing to output images...")
 
-    batch_imwrite(os.path.join(TRAIN_IMGS_FOLDER_PATH, "./original"), filenames, output_ims)
+    batch_imwrite(os.path.join(path, "./preprocessed"), filenames, output_ims)
 
     print("OK")
     print("Done.")
+
+
+if __name__ == "__main__":
+
+    print("Performing preprocessing actions on positive training images...")
+    readAndPreprocessAndWrite(FOLDER_PATH_POSITIVE_IMGS)
+
+    print("Performing preprocessing actions on negative training images...")
+    readAndPreprocessAndWrite(FOLDER_PATH_NEGATIVE_IMGS) 
