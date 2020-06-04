@@ -170,9 +170,9 @@ def shape_to_np(shape, dtype="int"):
 
 def cut_head(imgs, point, seed=None):
     h, w = imgs[0].shape[:2]
-    print('imgs: ', imgs[0].shape)
-    print('h: ', h)
-    print('w: ', w)
+    # print('imgs: ', imgs[0].shape)
+    # print('h: ', h)
+    # print('w: ', w)
     x1, y1 = np.min(point, axis=0)
     x2, y2 = np.max(point, axis=0)
     delta_x = (x2 - x1) / 8

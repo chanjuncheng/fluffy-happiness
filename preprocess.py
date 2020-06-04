@@ -56,7 +56,7 @@ def simulateDeepfake(im, trans_matrix, point):
     return output_im
 
 
-def preprocess(im, simulateDeepfake=False):
+def preprocess(im, willSimulateDeepfake=False):
 
     faces = lib.align(im[:, :, (2,1,0)], front_face_detector, lmark_predictor)  # list of tuples of (transformation matrix, landmark point) of identified faces
     
@@ -68,7 +68,7 @@ def preprocess(im, simulateDeepfake=False):
 
     trans_matrix, point = faces[0] # take only the first face found
 
-    if simulateDeepfake:
+    if willSimulateDeepfake:
         im = simulateDeepfake(im, trans_matrix, point)
 
     # crop image, after randomly expanding ROI (minimum bounding box b) in each direction between
@@ -79,13 +79,13 @@ def preprocess(im, simulateDeepfake=False):
     return cropped_output_im
 
 
-def batch_preprocess(ims):
+def batch_preprocess(ims, willSimulateDeepfake=False):
 
     output_ims = []
     failed_indices = []
 
     for i in range(len(ims)):
-        output = preprocess(ims[i])
+        output = preprocess(ims[i], willSimulateDeepfake)
         if output is not None:
             output_ims.append(output)
         else: # no face found
@@ -121,7 +121,7 @@ def batch_imwrite(folder_path, filenames, ims):
         cv2.imwrite(path, ims[i])
 
 
-def readAndPreprocessAndWrite(path):
+def readAndPreprocessAndWrite(path, outPath, willSimulateDeepfake=False):
 
     print("Reading all images from directory...")
 
@@ -141,7 +141,7 @@ def readAndPreprocessAndWrite(path):
 
     print("Start preprocessing...")
 
-    output_ims, failed = batch_preprocess(ims)
+    output_ims, failed = batch_preprocess(ims, willSimulateDeepfake)
 
     if len(failed) > 0:
         print("Some files were skipped (no face found):")
@@ -157,7 +157,7 @@ def readAndPreprocessAndWrite(path):
 
     print("Writing to output images...")
 
-    batch_imwrite(os.path.join(path, "./preprocessed"), filenames, output_ims)
+    batch_imwrite(outPath, filenames, output_ims)
 
     print("OK")
     print("Done.")
@@ -165,8 +165,10 @@ def readAndPreprocessAndWrite(path):
 
 if __name__ == "__main__":
 
+    # original, non-simulated
     print("Performing preprocessing actions on positive training images...")
-    readAndPreprocessAndWrite(FOLDER_PATH_POSITIVE_IMGS)
+    readAndPreprocessAndWrite(FOLDER_PATH_POSITIVE_IMGS, os.path.join(FOLDER_PATH_POSITIVE_IMGS, "./pos"), False)
 
+    # Deepfakes resolution inconsistencies simulated
     print("Performing preprocessing actions on negative training images...")
-    readAndPreprocessAndWrite(FOLDER_PATH_NEGATIVE_IMGS) 
+    readAndPreprocessAndWrite(FOLDER_PATH_NEGATIVE_IMGS, os.path.join(FOLDER_PATH_NEGATIVE_IMGS, "./neg"), True)
