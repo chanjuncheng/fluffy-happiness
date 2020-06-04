@@ -29,7 +29,7 @@ def extract_face(im):
 
 def predict(filepath):
 
-    FOLDER_PATH_WEIGHTS = "./8a_cfgs/8a_mesoinception4.h5"
+    FOLDER_PATH_WEIGHTS = "./8a_mesoinception4.h5"
     classifier = MesoInception4()
     classifier.load(FOLDER_PATH_WEIGHTS)
 
@@ -44,6 +44,7 @@ def predict(filepath):
 
     if is_video:
 
+        # positive = manipulated, negative = genuine
         pos_count = 0
         neg_count = 0
 
