@@ -1,5 +1,0 @@
-https://medium.com/@Lola_Dam/building-pyqt5-for-python-2-on-linux-b054f697b60c
-pip install keras==2.1.2 (later version not compatible)
-cd /mnt/d/uni\ stuff/fit3162/deepfake_new/gui
-export DISPLAY=:0.0 (source: https://www.youtube.com/watch?v=3_iGSpyGswo)
-window subsystem linux
