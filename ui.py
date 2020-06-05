@@ -6,7 +6,7 @@ from PyQt5.QtGui import QIcon, QColor, QPixmap
 from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QPushButton, QAction, QMessageBox
 from PyQt5.QtWidgets import QCalendarWidget, QFontDialog, QColorDialog, QTextEdit, QFileDialog
 from PyQt5.QtWidgets import QCheckBox, QProgressBar, QComboBox, QLabel, QStyleFactory, QLineEdit, QInputDialog
-from predict import *
+from predict import predict
 
 # pyuic5 -x testing.ui -o testing3.py
 class myWindow(QMainWindow):
@@ -18,15 +18,6 @@ class myWindow(QMainWindow):
         self.UI()
 
     def UI(self):
-        # self.label = QtWidgets.QLabel(self)
-        # self.label.setText("FaceSpot")
-        # self.label.move(50, 50)  # set location of label
-
-        # self.label2 = QtWidgets.QLabel(self)
-        # self.label2.setText("A detection software dedicated to expose DeepFake-generated content.")
-        # self.label2.adjustSize()
-        # self.label2.move(50, 70)  # set location of label
-
         self.label1 = QtWidgets.QLabel(self)
         self.label1.setGeometry(QtCore.QRect(40, 50, 201, 61))
         self.label1.setObjectName("label1")
@@ -52,7 +43,7 @@ class myWindow(QMainWindow):
         self.test_button.setGeometry(QtCore.QRect(450, 380, 93, 28))
         self.test_button.setObjectName("test_button")
         self.test_button.setEnabled(False)
-        self.test_button.clicked.connect(self.predict)
+        self.test_button.clicked.connect(self.startPredict)
 
         self.image = QtWidgets.QLabel(self)
         self.image.setGeometry(QtCore.QRect(590, 10, 211, 561))
@@ -82,19 +73,6 @@ class myWindow(QMainWindow):
         self.loading_label.setText(_translate("MainWindow", "Program not running."))
 
 
-    # def filePicker(self):
-    #     print("clicked")
-
-    # def retranslateUi(self, MainWindow):
-    #     _translate = QtCore.QCoreApplication.translate
-    #     MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-    #     self.input_button.setText(_translate("MainWindow", "Browse..."))
-    #     self.label1.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:24pt; font-weight:600;\">FaceSpot</span></p></body></html>"))
-    #     self.label2.setText(_translate("MainWindow", "<html><head/><body><p>A detection software dedicated to expose DeepFake-generated content.</p><p>Simply select a video or image file and start the process.</p><p>The accepted files formats are .jpg for images and .mp4 for videos.</p></body></html>"))
-    #     self.input_label.setText(_translate("MainWindow", "No input file selected"))
-    #     self.output_label.setText(_translate("MainWindow", "No output path selected"))
-    #     self.output_button.setText(_translate("MainWindow", "Browse..."))
-
     def openFile(self):
         _translate = QtCore.QCoreApplication.translate
         path, _ = QFileDialog.getOpenFileName(self, "Open File")
@@ -102,7 +80,6 @@ class myWindow(QMainWindow):
             self.input_label.setText(_translate("MainWindow", "A valid file has been selected"))
             self.file_label.setText(_translate("MainWindow", path))
             self.file_label.adjustSize()
-            # image = QPixmap(path)
             self.test_button.setEnabled(True)
             self.filepath = path
         else:
@@ -111,15 +88,9 @@ class myWindow(QMainWindow):
             self.file_label.adjustSize()
             self.test_button.setEnabled(False)
             return None
-        # file = open(path, 'r')
-        # self.editor()
-        #
-        # with file:
-        #     text = file.read()
-        #
-        # return text
 
-    def predict(self):
+
+    def startPredict(self):
         print(self.filepath)
         _translate = QtCore.QCoreApplication.translate
         self.loading_label.setText(_translate("MainWindow", "Please wait.. The program is currently running."))
@@ -137,33 +108,10 @@ class myWindow(QMainWindow):
             self.loading_label.setText("Done.")
             self.loading_label.adjustSize()
 
-    # def loading(self):
-    #     _translate = QtCore.QCoreApplication.translate
-    #     self.loading_label.setText(_translate("MainWindow", "Please wait.. The program is currently running."))
-    #     self.loading_label.adjustSize()
-
-
-    # def editor(self):
-    #     self.textEdit = QTextEdit()
-    #     self.setCentralWidget(self.textEdit)
 
 def window():
     app = QApplication(sys.argv) # config window based on OS
     win = myWindow()
-    # win.setGeometry(500, 300, 1000, 1000) # starting x, starting y, width, height
-    # win.setWindowTitle("FaceSpot")
-    #
-    # label = QtWidgets.QLabel(win)
-    # label.setText("FaceSpot")
-    # label.move(50,50) # set location of label
-    #
-    # label2 = QtWidgets.QLabel(win)
-    # label2.setText("A detection software dedicated to expose DeepFake-generated content.")
-    # label2.move(50, 70)  # set location of label
-    #
-    # b1 = QtWidgets.QPushButton(win)
-    # b1.setText("Browse...")
-
     win.show()
     sys.exit(app.exec_())
 

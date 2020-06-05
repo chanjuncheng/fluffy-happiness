@@ -13,8 +13,8 @@ RESIZE_MAX = 128
 
 IMG_SIZE = 256
 
-FOLDER_PATH_POSITIVE_IMGS = pwd + "./imgs/positive"
-FOLDER_PATH_NEGATIVE_IMGS = pwd + "./imgs/negative" # this is the folder where the images will be applied Deepfakes simulation
+FOLDER_PATH_POSITIVE_IMGS = pwd + "./imgs"
+FOLDER_PATH_NEGATIVE_IMGS = pwd + "./imgs" # this is the folder where the images will be applied Deepfakes simulation
 
 front_face_detector = dlib.get_frontal_face_detector()
 lmark_predictor = dlib.shape_predictor(pwd + './dlib_model/shape_predictor_68_face_landmarks.dat')
@@ -29,11 +29,6 @@ def simulateDeepfake(im, trans_matrix, point):
 
     face = cv2.warpAffine(im, trans_matrix * size, (size, size))
     face = cv2.GaussianBlur(face, (5,5), 0)
-
-    # xj resizing code
-    # face_imgs, face_landmark_coords = lib.get_aligned_face_and_landmarks(im, faces, 256, (0,0))
-    # face_img = face_imgs[0]
-    # face = cv2.resize(face_img, (size, size))
 
     warped_im = np.copy(im)
     warped_im = cv2.warpAffine(face, trans_matrix*size, image_size, warped_im, cv2.WARP_INVERSE_MAP, cv2.BORDER_TRANSPARENT)
@@ -61,22 +56,22 @@ def preprocess(im, willSimulateDeepfake=False):
     faces = lib.align(im[:, :, (2,1,0)], front_face_detector, lmark_predictor)  # list of tuples of (transformation matrix, landmark point) of identified faces
     
     if len(faces) == 0:
-        # logging.warning('No faces are detected.')
         return None
-
-    # logging.info('{} faces are detected.'.format(len(faces)))
 
     trans_matrix, point = faces[0] # take only the first face found
 
     if willSimulateDeepfake:
         im = simulateDeepfake(im, trans_matrix, point)
 
+    # GENERALIZATION STEP. REMOVED AFTER ACCURACY LOWERED.
     # crop image, after randomly expanding ROI (minimum bounding box b) in each direction between
     # [0, h/5] and [0, w/8] where h, w are height and width of b. then resize to 256 x 256 for final training data
-    rois, _ = lib.cut_head([im], point, random.randint(0, 10))
-    cropped_output_im = cv2.resize(rois[0], (IMG_SIZE, IMG_SIZE))
+    # rois, _ = lib.cut_head([im], point, random.randint(0, 10))
+    # cropped_output_im = cv2.resize(rois[0], (IMG_SIZE, IMG_SIZE))
 
-    return cropped_output_im
+    im = cv2.resize(im, (IMG_SIZE, IMG_SIZE))
+
+    return im
 
 
 def batch_preprocess(ims, willSimulateDeepfake=False):

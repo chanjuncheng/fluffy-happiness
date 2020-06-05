@@ -7,13 +7,11 @@ from mesonet_classifiers import MesoInception4
 Given a video (.mp4) or image file (.jpg), predict if the content was modified with DeepFake using the trained model
 '''
 
-def extract_face(im):
+def preprocess(im):
 
-    # pwd = os.path.dirname(__file__)
-    FACE_SIZE = 256
+    IMG_SIZE = 256
 
     front_face_detector = dlib.get_frontal_face_detector()
-    # lmark_predictor = dlib.shape_predictor(pwd + './dlib_model/shape_predictor_68_face_landmarks.dat')
     lmark_predictor = dlib.shape_predictor('./dlib_model/shape_predictor_68_face_landmarks.dat')
     
     faces = lib.align(im[:, :, (2,1,0)], front_face_detector, lmark_predictor) # list of tuples of (transformation matrix, landmark point) of identified faces
@@ -22,9 +20,12 @@ def extract_face(im):
         return None
 
     # take only the first face found
-    trans_matrix, _ = faces[0]
-    face = cv2.warpAffine(im, trans_matrix * FACE_SIZE, (FACE_SIZE, FACE_SIZE))
-    return face
+    # trans_matrix, _ = faces[0]
+    # face = cv2.warpAffine(im, trans_matrix * FACE_SIZE, (FACE_SIZE, FACE_SIZE))
+
+    # simply resizing without cropping in to facial region, as accuracy has been found to have increased
+    im = cv2.resize(im, (IMG_SIZE, IMG_SIZE))
+    return im
 
 
 def predict(filepath):
@@ -57,7 +58,7 @@ def predict(filepath):
 
         while is_running:
 
-            face = extract_face(im)
+            face = preprocess(im)
             if face is not None: # if no face found, skip current frame
                 face = np.expand_dims(face, axis=0)
                 res = classifier.predict(face)[0][0]
@@ -75,7 +76,7 @@ def predict(filepath):
     if is_image:
 
         im = cv2.imread(filepath)
-        face = extract_face(im)
+        face = preprocess(im)
         if face is not None:
             face = np.expand_dims(face, axis=0)
             res = classifier.predict(face)[0][0]
