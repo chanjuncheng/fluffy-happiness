@@ -8,6 +8,10 @@ from PyQt5.QtWidgets import QCalendarWidget, QFontDialog, QColorDialog, QTextEdi
 from PyQt5.QtWidgets import QCheckBox, QProgressBar, QComboBox, QLabel, QStyleFactory, QLineEdit, QInputDialog
 from predict import predict
 
+'''
+Main program that presents the prediction code in the form of a graphical user interface.
+'''
+
 # pyuic5 -x testing.ui -o testing3.py
 class myWindow(QMainWindow):
 
@@ -18,6 +22,11 @@ class myWindow(QMainWindow):
         self.UI()
 
     def UI(self):
+
+        '''
+        Placing UI elements.
+        '''
+
         self.label1 = QtWidgets.QLabel(self)
         self.label1.setGeometry(QtCore.QRect(40, 50, 201, 61))
         self.label1.setObjectName("label1")
@@ -74,6 +83,11 @@ class myWindow(QMainWindow):
 
 
     def openFile(self):
+
+        '''
+        Opens a file and updates relevant UI labels.
+        '''
+
         _translate = QtCore.QCoreApplication.translate
         path, _ = QFileDialog.getOpenFileName(self, "Open File")
         if path.endswith(".mp4") or path.endswith(".jpg") or path.endswith(".png"):
@@ -91,6 +105,11 @@ class myWindow(QMainWindow):
 
 
     def startPredict(self):
+
+        '''
+        Starts the prediction process updates relevant UI labels.
+        '''
+
         print(self.filepath)
         _translate = QtCore.QCoreApplication.translate
         self.loading_label.setText(_translate("MainWindow", "Please wait.. The program is currently running."))

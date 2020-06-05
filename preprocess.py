@@ -2,7 +2,9 @@ import random, cv2, os, dlib, numpy as np
 from py_utils.face_utils import lib
 
 '''
-Training designed to only work on images
+Carries out preprocessing on a batch of images provided. Note in its current state, only works on images, not videos.
+Preprocessing for positive samples includes only resizing.
+For negative samples, the resolution inconsistency of Deepfake is simulated using Gaussian blurring and affine warping.
 '''
 
 pwd = os.path.dirname(__file__)
@@ -11,6 +13,7 @@ pwd = os.path.dirname(__file__)
 RESIZE_MIN = 64
 RESIZE_MAX = 128
 
+# output image size = expected input size to network architecture
 IMG_SIZE = 256
 
 FOLDER_PATH_POSITIVE_IMGS = pwd + "./imgs"
@@ -21,6 +24,13 @@ lmark_predictor = dlib.shape_predictor(pwd + './dlib_model/shape_predictor_68_fa
 
 
 def simulateDeepfake(im, trans_matrix, point):
+
+    '''
+    Given an image, a transform matrix and landmark points of a detected facial region, applies appropriate
+    Gaussian blurring and affine warping to simulate the resolution inconsistencies of Deepfake.
+    Masking is used to only blur the region shaped as the face, instead of a rectangular box around the face.
+    Returns the simulated image.
+    '''
 
     image_size = im.shape[1], im.shape[0]
     size = random.randint(RESIZE_MIN, RESIZE_MAX + 1) # align face to a size k x k where k is a number between RESIZE_MIN and RESIZE_MAX
@@ -41,6 +51,7 @@ def simulateDeepfake(im, trans_matrix, point):
     mask = cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY)
     mask_inv = cv2.cvtColor(mask_inv, cv2.COLOR_BGR2GRAY)
 
+    # masking and combining output
     area_surrounding = cv2.bitwise_or(im, im, mask = mask_inv)
     area_surrounding = area_surrounding[0:im.shape[0], 0:im.shape[1]]
 
@@ -48,12 +59,19 @@ def simulateDeepfake(im, trans_matrix, point):
     area_facial = area_facial[0:im.shape[0], 0:im.shape[1]]
 
     output_im = area_surrounding + area_facial
+
     return output_im
 
 
 def preprocess(im, willSimulateDeepfake=False):
 
-    faces = lib.align(im[:, :, (2,1,0)], front_face_detector, lmark_predictor)  # list of tuples of (transformation matrix, landmark point) of identified faces
+    '''
+    Given an image, attempts to detect a face. If none is found, returns None. Returns the image resized to as specified by IMG_SIZE.
+    If instructed to simulate Deepfake, simulation will be applied before resizing.
+    '''
+
+    # list of tuples of (transformation matrix, landmark point) of identified faces
+    faces = lib.align(im[:, :, (2,1,0)], front_face_detector, lmark_predictor)
     
     if len(faces) == 0:
         return None
@@ -76,6 +94,12 @@ def preprocess(im, willSimulateDeepfake=False):
 
 def batch_preprocess(ims, willSimulateDeepfake=False):
 
+    '''
+    Given an array of images, preprocess them in batch and returns the array of successfully preprocessed images.
+    Failed ones will be discarded, and their indicies wil be returned.
+    Will apply simulation as appropriate if instructed.
+    '''
+
     output_ims = []
     failed_indices = []
 
@@ -90,6 +114,11 @@ def batch_preprocess(ims, willSimulateDeepfake=False):
 
 
 def batch_imread(folder_path):
+
+    '''
+    Given a folder path containing images, read them in batch and returns the array of successfully read images. (failed ones discarded)
+    Also returns the filenames as well as the indices of files that have failed to be read.
+    '''
 
     ims = []
     failed_indices = []
@@ -107,6 +136,11 @@ def batch_imread(folder_path):
 
 def batch_imwrite(folder_path, filenames, ims):
 
+    '''
+    Given a folder path, a list of filenames for every image, and an array of images, write the images out to the path + filename.
+    Also adds a suffix of "_preprocessed" before the filetype.
+    '''
+
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
 
@@ -117,6 +151,11 @@ def batch_imwrite(folder_path, filenames, ims):
 
 
 def readAndPreprocessAndWrite(path, outPath, willSimulateDeepfake=False):
+
+    '''
+    Given a path containing images, an output path, and a flag of whether to simulate Deepfake effects,
+    preprocess the images and write out to the specified output path.
+    '''
 
     print("Reading all images from directory...")
 

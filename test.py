@@ -1,6 +1,9 @@
 import os, cv2, numpy as np
 from mesonet_classifiers import MesoInception4
 
+'''
+Using preprocessed images, test the accuracy of a given model.
+'''
 
 pwd = os.path.dirname(__file__)
 FOLDER_PATH_POSITIVE_SAMPLES = pwd + "./test_imgs/positive"
@@ -39,9 +42,11 @@ for filename in os.listdir(FOLDER_PATH_NEGATIVE_SAMPLES):
         else:
             true_pos += 1
 
+# calculate accuracy
 total = true_pos + true_neg + false_pos + false_neg
 accuracy = float(true_pos + true_neg) / total
 
+# output accuracy
 print("Results:")
 print("Accuracy: " + str(accuracy))
 print("True positive: " + str(float(true_pos) / total))
