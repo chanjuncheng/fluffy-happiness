@@ -74,7 +74,7 @@ class myWindow(QMainWindow):
                                        "<html><head/><body><p><span style=\" font-size:24pt; font-weight:600;\">FaceSpot</span></p></body></html>"))
         self.label2.setText(_translate("MainWindow",
                                        "<html><head/><body><p>A detection software dedicated to expose DeepFake-generated content.</p><p>Simply "
-                                       "select a video or image file and start the process.</p><p>The accepted files formats are .jpg for images and "
+                                       "select a video or image file and start the process.</p><p>The accepted files formats are .jpg/.png for images and "
                                        ".mp4 for videos.</p></body></html>"))
         self.input_label.setText(_translate("MainWindow", "No input file selected"))
         self.input_button.setText(_translate("MainWindow", "Browse..."))

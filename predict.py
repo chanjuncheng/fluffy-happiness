@@ -1,4 +1,4 @@
-import os, cv2, dlib, numpy as np
+import sys, os, cv2, dlib, numpy as np
 from py_utils.face_utils import lib
 from mesonet_classifiers import MesoInception4
 
@@ -98,7 +98,7 @@ def predict(filepath):
 
     # logging prediction and returning result
 
-    print("Prediction: " + "This video/image has been manipulated" if res > 0.5 else "This video/image is unmodified")
+    # print("Prediction: " + "This video/image has been manipulated" if res > 0.5 else "This video/image is unmodified")
 
     if res > 0.5:
         return True
@@ -106,3 +106,9 @@ def predict(filepath):
         return False
 
     # Assumption made: if no face is found, treat content as unmodified as DeepFake only works on facial regions
+
+
+if __name__ == "__main__":
+    filepath = sys.argv[1]
+    res = predict(filepath)
+    print(res)

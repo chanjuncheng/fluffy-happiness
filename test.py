@@ -24,6 +24,7 @@ false_neg = 0
 for filename in os.listdir(FOLDER_PATH_POSITIVE_SAMPLES):
     im = cv2.imread(os.path.join(FOLDER_PATH_POSITIVE_SAMPLES, filename))
     if im is not None:
+        im = cv2.resize(im, (256, 256))
         im = np.expand_dims(im, axis=0)
         res = classifier.predict(im)[0][0]
         if res >= 0.5:
@@ -35,6 +36,7 @@ for filename in os.listdir(FOLDER_PATH_POSITIVE_SAMPLES):
 for filename in os.listdir(FOLDER_PATH_NEGATIVE_SAMPLES):
     im = cv2.imread(os.path.join(FOLDER_PATH_NEGATIVE_SAMPLES, filename))
     if im is not None:
+        im = cv2.resize(im, (256, 256))
         im = np.expand_dims(im, axis=0)
         res = classifier.predict(im)[0][0]
         if res < 0.5:
@@ -42,14 +44,20 @@ for filename in os.listdir(FOLDER_PATH_NEGATIVE_SAMPLES):
         else:
             true_pos += 1
 
-# calculate accuracy
+# calculate performance
 total = true_pos + true_neg + false_pos + false_neg
 accuracy = float(true_pos + true_neg) / total
+forged_score = float(true_pos) / float(true_pos + false_neg)
+real_score = float(true_neg) / float(true_neg + false_pos)
+recall = forged_score
+precision = float(true_pos) / float(true_pos + false_pos)
+f1_score = 2 * (float(precision * recall) / float(precision + recall))
 
-# output accuracy
+# output performance
 print("Results:")
 print("Accuracy: " + str(accuracy))
-print("True positive: " + str(float(true_pos) / total))
-print("True negative: " + str(float(true_neg) / total))
-print("False positive: " + str(float(false_pos) / total))
-print("False negative: " + str(float(false_neg) / total))
+print("Forged score: " + str(forged_score))
+print("Real score: " + str(real_score))
+print("Precision: " + str(precision))
+print("Recall: " + str(recall))
+print("F1 Score: " + str(f1_score))

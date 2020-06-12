@@ -16,11 +16,11 @@ RESIZE_MAX = 128
 # output image size = expected input size to network architecture
 IMG_SIZE = 256
 
-FOLDER_PATH_POSITIVE_IMGS = pwd + "./imgs"
-FOLDER_PATH_NEGATIVE_IMGS = pwd + "./imgs" # this is the folder where the images will be applied Deepfakes simulation
+FOLDER_PATH_POSITIVE_IMGS = pwd + "./imgs/positive"
+FOLDER_PATH_NEGATIVE_IMGS = pwd + "./imgs/negative" # this is the folder where the images will be applied Deepfakes simulation
 
 front_face_detector = dlib.get_frontal_face_detector()
-lmark_predictor = dlib.shape_predictor(pwd + './dlib_model/shape_predictor_68_face_landmarks.dat')
+lmark_predictor = dlib.shape_predictor('dlib_model/shape_predictor_68_face_landmarks.dat')
 
 
 def simulateDeepfake(im, trans_matrix, point):
